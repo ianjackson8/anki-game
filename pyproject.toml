@@ -1,0 +1,18 @@
+[project]
+name = "anki-game"
+version = "0.1.0"
+description = "Terminal games that study your real Anki flashcards"
+requires-python = ">=3.11"
+dependencies = [
+    "textual>=0.58",
+]
+
+[project.scripts]
+anki-game = "anki_game.__main__:run"
+
+[build-system]
+requires = ["setuptools>=68"]
+build-backend = "setuptools.build_meta"
+
+[tool.setuptools]
+packages = ["anki_game", "anki_game.games"]

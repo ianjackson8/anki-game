@@ -1,0 +1,10 @@
+# Copy this file to config.toml (gitignored) and uncomment/edit the path
+# below if your Anki collection isn't in the default per-OS location:
+#   macOS:   ~/Library/Application Support/Anki2/<Profile>/collection.anki2
+#   Linux:   ~/.local/share/Anki2/<Profile>/collection.anki2
+#   Windows: %APPDATA%\Anki2\<Profile>\collection.anki2
+#
+# Leave this file absent, or the setting unset, to auto-detect the first
+# profile found in the default location.
+
+# anki_collection_path = "/absolute/path/to/collection.anki2"
