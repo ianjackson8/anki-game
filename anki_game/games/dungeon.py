@@ -112,7 +112,7 @@ class DungeonScreen(GameScreen):
             status = f"{self._last_feedback}\n{status}"
         self.query_one("#status", Static).update(status)
 
-    def on_correct(self, word: Word) -> None:
+    def on_correct(self, word: Word, guess: str) -> None:
         damage = 10 + min(self.combo, 10) * 2
         self.combo += 1
         self.enemy_hp -= damage
@@ -123,7 +123,7 @@ class DungeonScreen(GameScreen):
             self._spawn_enemy()
         self.next_word()
 
-    def on_incorrect(self, word: Word) -> None:
+    def on_incorrect(self, word: Word, guess: str) -> None:
         self.combo = 0
         dmg = BOSS_COUNTER_DAMAGE if self.is_boss else ENEMY_COUNTER_DAMAGE
         self.player_hp -= dmg

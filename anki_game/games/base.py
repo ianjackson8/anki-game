@@ -140,14 +140,14 @@ class GameScreen(Screen):
         correct = check_answer(self.current, guess, self.mode)
         self.progress.record_answer(self.current.note_id, correct)
         if correct:
-            self.on_correct(self.current)
+            self.on_correct(self.current, guess)
         else:
-            self.on_incorrect(self.current)
+            self.on_incorrect(self.current, guess)
 
-    def on_correct(self, word: Word) -> None:  # pragma: no cover - overridden
+    def on_correct(self, word: Word, guess: str) -> None:  # pragma: no cover - overridden
         raise NotImplementedError
 
-    def on_incorrect(self, word: Word) -> None:  # pragma: no cover - overridden
+    def on_incorrect(self, word: Word, guess: str) -> None:  # pragma: no cover - overridden
         raise NotImplementedError
 
     def end_session(self, title: str, lines: list[str]) -> None:

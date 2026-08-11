@@ -11,7 +11,7 @@ from textual.widgets import Label, Static
 from anki_game.anki_source import Deck
 from anki_game.progress import ProgressStore
 from anki_game.queue import WordQueue
-from anki_game.words import Word, prompt_text
+from anki_game.words import Word, answer_hint, prompt_text
 
 from .base import GameScreen, deck_label
 
@@ -46,6 +46,7 @@ class TypingAttackScreen(GameScreen):
         self.interval = START_INTERVAL
         self.streak = 0
         self._timer: Timer | None = None
+        self._last_feedback = ""
 
     def compose_game(self) -> ComposeResult:
         yield Label(f"Typing Attack — {deck_label(self.deck)}", id="deck-title")
@@ -67,9 +68,10 @@ class TypingAttackScreen(GameScreen):
     def show_word(self, word: Word) -> None:
         self._render_lane(word)
         speed = START_INTERVAL / self.interval
-        self.query_one("#status", Static).update(
-            f"lives {'❤ ' * self.lives}· score {self.score} · speed {speed:.1f}x"
-        )
+        status = f"lives {'❤ ' * self.lives}· score {self.score} · speed {speed:.1f}x"
+        if self._last_feedback:
+            status = f"{self._last_feedback}\n{status}"
+        self.query_one("#status", Static).update(status)
 
     def _render_lane(self, word: Word) -> None:
         text = prompt_text(word, self.mode)
@@ -87,8 +89,11 @@ class TypingAttackScreen(GameScreen):
             self._render_lane(self.current)
 
     def _land(self) -> None:
+        word = self.current
         self.lives -= 1
         self.streak = 0
+        if word is not None:
+            self._last_feedback = f"[red]✗ Missed! It was {answer_hint(word, self.mode)}[/]"
         if self.lives <= 0:
             if self._timer:
                 self._timer.stop()
@@ -96,10 +101,11 @@ class TypingAttackScreen(GameScreen):
             return
         self.next_word()
 
-    def on_correct(self, word: Word) -> None:
+    def on_correct(self, word: Word, guess: str) -> None:
         distance_left = LANE_HEIGHT - self.row
         self.score += 10 + distance_left
         self.streak += 1
+        self._last_feedback = ""
         if self.streak % SPEEDUP_EVERY == 0:
             self.interval = max(MIN_INTERVAL, self.interval * SPEEDUP_FACTOR)
             if self._timer:
@@ -107,7 +113,8 @@ class TypingAttackScreen(GameScreen):
             self._timer = self.set_interval(self.interval, self._tick)
         self.next_word()
 
-    def on_incorrect(self, word: Word) -> None:
-        self.query_one("#status", Static).update(
-            f"lives {'❤ ' * self.lives}· score {self.score} · not quite, keep trying..."
-        )
+    def on_incorrect(self, word: Word, guess: str) -> None:
+        status = f"lives {'❤ ' * self.lives}· score {self.score} · not quite, keep trying..."
+        if self._last_feedback:
+            status = f"{self._last_feedback}\n{status}"
+        self.query_one("#status", Static).update(status)

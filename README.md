@@ -2,10 +2,12 @@
 
 Terminal games that study your real Anki flashcards. Reads your Anki collection directly (read-only, never writes to it) and turns due/new cards into gameplay.
 
-Currently ships two games over any `HSK::HSK{1-6}::{Read,Write,Speak}` deck:
+Currently ships four games over any `HSK::HSK{1-6}::{Read,Write,Speak}` deck:
 
 - **Dungeon Crawler** — attack a hanzi enemy by answering correctly; miss and it hits back. Every 5 kills spawns a boss drawn from words you've historically struggled with.
 - **Typing Attack** — a word falls down a lane each tick; answer before it lands or lose a life. Speed ramps up on a streak.
+- **Hanzi Wordle** — hangman-style: the answer is masked and reveals more with each wrong guess, 6 attempts per word, fewer attempts = more points. 10 words per session.
+- **Roguelike Map** — walk a 6-room dungeon; answer 3 words correctly to clear a room, wrong answers cost one of your 3 shared lives. Clear every room to reach the treasure.
 
 The menu flow is: main menu (shows your overall stats + high scores) → Play → HSK level → Read/Write/Speak → game or **📊 Word stats**. Press Escape from inside a game to jump straight back to the main menu; from a menu screen it backs up one level.
 
@@ -42,4 +44,4 @@ Game progress (words practiced, accuracy, high scores) is stored separately in `
 
 ## Adding another game
 
-Subclass `GameScreen` in `anki_game/games/base.py`, implement `compose_game`, `show_word`, `on_correct`, `on_incorrect`, and register it in `GAMES` in `anki_game/app.py`. Hanzi Wordle and a roguelike map are natural next additions on this same engine.
+Subclass `GameScreen` in `anki_game/games/base.py`, implement `compose_game`, `show_word`, `on_correct(word, guess)`, `on_incorrect(word, guess)`, and register it in `GAMES` + `AnkiGameApp.start_game` in `anki_game/app.py`.

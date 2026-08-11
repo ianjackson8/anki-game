@@ -20,7 +20,9 @@ from textual.widgets.option_list import Option
 
 from anki_game.anki_source import AnkiSource, Deck
 from anki_game.games.dungeon import DungeonScreen
+from anki_game.games.roguelike import RoguelikeScreen
 from anki_game.games.typing_attack import TypingAttackScreen
+from anki_game.games.wordle import WordleScreen
 from anki_game.progress import ProgressStore
 from anki_game.queue import WordQueue, load_words, mode_for_deck
 from anki_game.render import bar_chart
@@ -29,6 +31,8 @@ from anki_game.words import Word
 GAMES = {
     "dungeon": ("Dungeon Crawler", "Battle hanzi enemies with typed answers"),
     "typing_attack": ("Typing Attack", "Catch falling words before they land"),
+    "wordle": ("Hanzi Wordle", "Hangman-style guessing, 6 attempts per word"),
+    "roguelike": ("Roguelike Map", "Clear rooms of words to reach the treasure"),
 }
 
 
@@ -292,6 +296,10 @@ class AnkiGameApp(App):
             screen = DungeonScreen(
                 deck=deck, queue=queue, progress=self.progress, all_words=words, mode=mode
             )
+        elif game_key == "wordle":
+            screen = WordleScreen(deck=deck, queue=queue, progress=self.progress, mode=mode)
+        elif game_key == "roguelike":
+            screen = RoguelikeScreen(deck=deck, queue=queue, progress=self.progress, mode=mode)
         else:
             screen = TypingAttackScreen(deck=deck, queue=queue, progress=self.progress, mode=mode)
         self.push_screen(screen)

@@ -3,6 +3,15 @@
 All notable changes to this project are documented here.
 Format loosely follows [Keep a Changelog](https://keepachangelog.com/).
 
+## [0.2.0] - 2026-08-10
+
+### Added
+- **Hanzi Wordle** (`anki_game/games/wordle.py`) — hangman-style progressive reveal: the target answer starts fully masked and reveals more characters with each of up to 6 wrong guesses; score is based on how few attempts you needed. 10 words per session.
+- **Roguelike Map** (`anki_game/games/roguelike.py`) — a 6-room linear dungeon with an ASCII map; clear 3 words per room to advance, wrong answers cost one of 3 lives shared across the whole run, clear every room for a victory bonus.
+- `anki_game/render.py` — extracted the shared block-bar renderer (`bar()`, used by HP/lives bars and the stats charts) plus a new `bar_chart()` helper, so both games and the stats screen draw from the same place.
+- `GameScreen.on_correct`/`on_incorrect` now receive the raw guess text (not just the word), needed for Wordle's guess-history display.
+- Typing Attack now shows the correct answer when a word lands unanswered, instead of just silently costing a life.
+
 ## [0.1.0] - 2026-08-10
 
 Initial release: terminal games that study your real Anki flashcards.
