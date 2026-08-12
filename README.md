@@ -2,12 +2,14 @@
 
 Terminal games that study your real Anki flashcards. Reads your Anki collection directly (read-only, never writes to it) and turns due/new cards into gameplay.
 
-Currently ships four games over any `HSK::HSK{1-6}::{Read,Write,Speak}` deck:
+Currently ships six games over any `HSK::HSK{1-6}::{Read,Write,Speak}` deck:
 
 - **Dungeon Crawler** — attack a hanzi enemy by answering correctly; miss and it hits back. Every 5 kills spawns a boss drawn from words you've historically struggled with.
 - **Typing Attack** — a word falls down a lane each tick; answer before it lands or lose a life. Speed ramps up on a streak.
 - **Hanzi Wordle** — hangman-style: the answer is masked and reveals more with each wrong guess, 6 attempts per word, fewer attempts = more points. 10 words per session.
 - **Roguelike Map** — walk a 6-room dungeon; answer 3 words correctly to clear a room, wrong answers cost one of your 3 shared lives. Clear every room to reach the treasure.
+- **Tone Drill** — Hanzi only, you type just the tone-number sequence (`23` for 小姐) before a shrinking timer runs out. Always tone-only regardless of which Read/Write/Speak deck you picked to get here, since it drills a skill orthogonal to that split. 3 shared lives, speeds up on a streak. Pick Easy (6.0s/word), Medium (4.0s), or Hard (2.5s) before starting — each has its own floor as it speeds up, so Hard never gets easier than 1.0s while Easy bottoms out at 3.0s.
+- **Tone Study** — the untimed counterpart to Tone Drill, for actually absorbing a correction instead of just seeing it flash by: get a tone wrong and you must retype it correctly before moving on, and that word resurfaces again ~5 words later in the same session so the correction gets reinforced while it's still fresh. No lives, no timer — just play until you've mastered 12 words (or quit anytime with Escape).
 
 The menu flow is: main menu (shows your overall stats + high scores) → Play → HSK level → Read/Write/Speak → game or **📊 Word stats**. Press Escape from inside a game to jump straight back to the main menu; from a menu screen it backs up one level.
 

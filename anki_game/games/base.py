@@ -16,7 +16,14 @@ from anki_game.anki_source import Deck
 from anki_game.progress import ProgressStore
 from anki_game.queue import WordQueue
 from anki_game.render import bar
-from anki_game.words import MODE_HANZI, MODE_MEANING, MODE_PINYIN, Word, check_answer
+from anki_game.words import (
+    MODE_HANZI,
+    MODE_MEANING,
+    MODE_PINYIN,
+    MODE_TONE,
+    Word,
+    check_answer,
+)
 
 # The mode determines both what's shown as the prompt (see games/dungeon.py,
 # games/typing_attack.py) and what the input box expects back.
@@ -28,6 +35,7 @@ _PLACEHOLDERS = {
     # tone numbers (shen2 me5) always work and are accepted too.
     MODE_PINYIN: "type pinyin with tones, e.g. shen2 me5 (or shén me), then Enter",
     MODE_HANZI: "type the Hanzi (你好), then Enter",
+    MODE_TONE: "type just the tone numbers, e.g. 23 for 小姐 (5 = neutral), then Enter",
 }
 
 

@@ -16,6 +16,12 @@ _TONE_SPAN_RE = re.compile(r'<span class="tone(\d)">([^<]*)</span>')
 MODE_MEANING = "meaning"  # Read: see Hanzi, answer English
 MODE_PINYIN = "pinyin"  # Speak: see Hanzi, answer pinyin (tones matter)
 MODE_HANZI = "hanzi"  # Write: see English, answer Hanzi
+MODE_TONE = "tone"  # Tone Drill/Study: see Hanzi, answer just the tone-number sequence
+
+TONE_SHAPES = {"1": "ˉ", "2": "ˊ", "3": "ˇ", "4": "ˋ", "5": "˙"}
+TONE_LEGEND = "   ".join(
+    f"{d} = {sym}" + (" (neutral)" if d == "5" else "") for d, sym in TONE_SHAPES.items()
+)
 
 
 def _strip_html(s: str) -> str:
@@ -172,6 +178,22 @@ def _check_pinyin(word: Word, guess: str) -> bool:
     return False
 
 
+def tone_pattern(numbered: str) -> str:
+    """"xiao2 jie5" -> "25" -- just the tone digit per syllable."""
+    return "".join(tok[-1] for tok in numbered.split() if tok and tok[-1].isdigit())
+
+
+def tone_shapes(pattern: str) -> str:
+    return "".join(TONE_SHAPES.get(d, d) for d in pattern)
+
+
+def _check_tone(word: Word, guess: str) -> bool:
+    guess_digits = re.sub(r"[^1-5]", "", guess)
+    if not guess_digits:
+        return False
+    return any(guess_digits == tone_pattern(numbered) for _display, numbered in word.pinyin_variants)
+
+
 def _check_hanzi(word: Word, guess: str) -> bool:
     guess_norm = _normalize_hanzi(guess)
     if not guess_norm:
@@ -187,6 +209,8 @@ def check_answer(word: Word, guess: str, mode: str) -> bool:
         return _check_pinyin(word, guess)
     if mode == MODE_HANZI:
         return _check_hanzi(word, guess)
+    if mode == MODE_TONE:
+        return _check_tone(word, guess)
     raise ValueError(f"unknown answer mode: {mode!r}")
 
 
@@ -200,6 +224,12 @@ def answer_hint(word: Word, mode: str) -> str:
         if word.traditional and word.traditional != word.hanzi:
             return f"{word.hanzi} ({word.traditional})"
         return word.hanzi
+    if mode == MODE_TONE:
+        parts = []
+        for display, numbered in word.pinyin_variants:
+            pattern = tone_pattern(numbered)
+            parts.append(f"{display} = {pattern} ({tone_shapes(pattern)})")
+        return " / ".join(parts)
     raise ValueError(f"unknown answer mode: {mode!r}")
 
 

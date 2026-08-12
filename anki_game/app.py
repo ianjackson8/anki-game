@@ -21,6 +21,8 @@ from textual.widgets.option_list import Option
 from anki_game.anki_source import AnkiSource, Deck
 from anki_game.games.dungeon import DungeonScreen
 from anki_game.games.roguelike import RoguelikeScreen
+from anki_game.games.tone_drill import DIFFICULTIES, ToneDrillScreen
+from anki_game.games.tone_study import ToneStudyScreen
 from anki_game.games.typing_attack import TypingAttackScreen
 from anki_game.games.wordle import WordleScreen
 from anki_game.progress import ProgressStore
@@ -33,6 +35,8 @@ GAMES = {
     "typing_attack": ("Typing Attack", "Catch falling words before they land"),
     "wordle": ("Hanzi Wordle", "Hangman-style guessing, 6 attempts per word"),
     "roguelike": ("Roguelike Map", "Clear rooms of words to reach the treasure"),
+    "tone_drill": ("Tone Drill", "Rapid-fire: Hanzi -> tone numbers only, beat the clock"),
+    "tone_study": ("Tone Study", "Untimed: get a tone wrong and retry it until it sticks"),
 }
 
 
@@ -60,8 +64,31 @@ class GameMenuScreen(Screen):
     def on_option_list_option_selected(self, event: OptionList.OptionSelected) -> None:
         if event.option.id == "stats":
             self.app.show_stats(self.deck)  # type: ignore[attr-defined]
+        elif event.option.id == "tone_drill":
+            self.app.push_screen(ToneDrillDifficultyScreen(self.deck))
         else:
             self.app.start_game(self.deck, event.option.id)  # type: ignore[attr-defined]
+
+
+class ToneDrillDifficultyScreen(Screen):
+    BINDINGS = [Binding("escape", "app.pop_screen", "Back")]
+
+    def __init__(self, deck: Deck):
+        super().__init__()
+        self.deck = deck
+
+    def compose(self) -> ComposeResult:
+        yield Header()
+        yield Label("Tone Drill — choose a difficulty", id="menu-title")
+        options = [
+            Option(f"{label} — {start:.1f}s per word (down to {floor:.1f}s)", id=key)
+            for key, (label, start, floor) in DIFFICULTIES.items()
+        ]
+        yield OptionList(*options, id="difficulty-list")
+        yield Footer()
+
+    def on_option_list_option_selected(self, event: OptionList.OptionSelected) -> None:
+        self.app.start_game(self.deck, "tone_drill", difficulty=event.option.id)  # type: ignore[attr-defined]
 
 
 _ACCURACY_BUCKETS = ("Not practiced", "0–40%", "40–70%", "70–100%")
@@ -288,7 +315,7 @@ class AnkiGameApp(App):
         while len(self.screen_stack) > 2:
             self.pop_screen()
 
-    def start_game(self, deck: Deck, game_key: str) -> None:
+    def start_game(self, deck: Deck, game_key: str, *, difficulty: str | None = None) -> None:
         words = load_words(self.source, deck)
         queue = WordQueue(words)
         mode = mode_for_deck(deck)
@@ -300,6 +327,14 @@ class AnkiGameApp(App):
             screen = WordleScreen(deck=deck, queue=queue, progress=self.progress, mode=mode)
         elif game_key == "roguelike":
             screen = RoguelikeScreen(deck=deck, queue=queue, progress=self.progress, mode=mode)
+        elif game_key == "tone_drill":
+            # Always tone-only, regardless of the Read/Write/Speak deck picked
+            # to get here -- the underlying words are the same Anki notes.
+            screen = ToneDrillScreen(
+                deck=deck, queue=queue, progress=self.progress, difficulty=difficulty or "medium"
+            )
+        elif game_key == "tone_study":
+            screen = ToneStudyScreen(deck=deck, queue=queue, progress=self.progress)
         else:
             screen = TypingAttackScreen(deck=deck, queue=queue, progress=self.progress, mode=mode)
         self.push_screen(screen)

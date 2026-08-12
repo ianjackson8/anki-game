@@ -5,3 +5,4 @@ data/*.db*
 .DS_Store
 config.toml
 TODO.md
+CLAUDE.md

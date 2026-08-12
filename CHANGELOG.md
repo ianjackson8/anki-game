@@ -3,6 +3,13 @@
 All notable changes to this project are documented here.
 Format loosely follows [Keep a Changelog](https://keepachangelog.com/).
 
+## [0.3.0] - 2026-08-11
+
+### Added
+- **Tone Drill** (`anki_game/games/tone_drill.py`) — a fifth game, isolating tone recall from full pinyin recall: see the Hanzi, type just the tone-number sequence (e.g. `23` for 小姐) before a shrinking per-word timer runs out. 3 shared lives, speeds up every 5-streak, always tone-only regardless of which Read/Write/Speak deck you picked to get there. Choose Easy/Medium/Hard before starting, each with its own starting time limit and speedup floor.
+- `words.py::MODE_TONE` — new answer mode with its own checking (matches any of a word's valid pronunciations' tone patterns) and hint text that shows the tone shape symbols (ˉˊˇˋ˙) alongside the digits.
+- **Tone Study** (`anki_game/games/tone_study.py`) — a sixth game, the untimed counterpart to Tone Drill: a wrong tone answer must be retyped correctly before advancing (active recall of the correction), and that word is requeued to resurface again 5 words later in the same session for reinforcement. No lives/timer; session ends after 12 mastered words or whenever you quit.
+
 ## [0.2.0] - 2026-08-10
 
 ### Added
